@@ -4,7 +4,7 @@
 from uuid import UUID #assigns a unique identifier
 from datetime import date
 from datetime import datetime
-from typing import Optional
+from typing import Optional,List #
 
 #Pydantic
 
@@ -14,6 +14,7 @@ from pydantic import Field
 
 #fastapi
 from fastapi import FastAPI
+from fastapi import status
 
 
 app=FastAPI()
@@ -69,6 +70,9 @@ class Tweet(BaseModel):
 
 #esqueleto de las path operations
 
+#Path Operations
+
+
 @app.get(
     path='/',)
 def home():
@@ -80,7 +84,77 @@ def home():
     """
     return {"Twiter API":'Working'}
 
+## Users
 
+
+
+
+@app.post(
+    path='/signup',
+    response_model=User,
+    status_code=status.HTTP_201_CREATED,
+    summary='Registers a users',
+    tags='Users'
+)
+def signup():
+    pass
+
+
+@app.post(
+    path='/login',
+    response_model=User,
+    status_code=status.HTTP_200_OK,
+    summary='Logins a users',
+    tags='Users'
+)
+def login():
+    pass
+
+@app.get(
+    path='/users',
+    response_model=List[User],
+    status_code=status.HTTP_200_OK,
+    summary='Shows all users',
+    tags='Users'
+)
+def shows_all_users   ():
+    pass
+
+@app.get(
+    path='/users/{user_id}',
+    response_model=User,
+    status_code=status.HTTP_200_OK,
+    summary='Shows a single user',
+    tags='Users'
+)
+def show_a_user():
+    pass
+
+
+@app.delete(
+    path='/users/{user_id}/delete',
+    response_model=User,
+    status_code=status.HTTP_200_OK,
+    summary='Deletes a user',
+    tags='Users'
+)
+
+def delete_a_user():
+    pass
+
+
+
+@app.put(
+    path='/users/{user_id}/update',
+    resposnse_model=User,
+    status_code=status.HTTP_200_OK,
+    summary='Updates a user'
+   )
+
+def update_a_user():
+    pass
+
+## Tweets
 
 
 """tweets
