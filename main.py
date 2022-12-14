@@ -56,7 +56,12 @@ class UserLogin(UserBase):
         max_length=64
         )    
     
-    
+class UserRegister(User):
+    password: str = Field(
+        ...,
+        min_length=8,
+        max_length=64
+    )
 class Tweet(BaseModel):
     tweet_id:UUID=Field(...)
     content:str=Field(
@@ -66,6 +71,7 @@ class Tweet(BaseModel):
     )
     created_at:datetime= Field(default=datetime.now())
     updated_at:Optional[datetime]=Field(default=None)     
+    
 
 
 #esqueleto de las path operations
@@ -76,6 +82,7 @@ class Tweet(BaseModel):
 
 
 ## Users
+### Registers a user
 @app.post(
     path='/signup',
     response_model=User,
@@ -84,7 +91,22 @@ class Tweet(BaseModel):
     tags=['Users']
 )
 def signup():
-    pass
+    """
+    Signup
+    
+    This path operation  registers a user in the app
+    
+    Parameters:
+    -Request body Parameter
+        user-UserRegister
+        
+    Returns a Json with the basic user information:
+    user_id :UUID
+    -email : Emailstr
+    first_name:str
+    last_name: str
+    birth_date:str
+    """
 
 
 @app.post(
