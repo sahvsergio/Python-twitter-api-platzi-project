@@ -73,28 +73,15 @@ class Tweet(BaseModel):
 #Path Operations
 
 
-@app.get(
-    path='/',)
-def home():
-    """
-    Title:
-    Description:
-    Parameters:
-    Returns:
-    """
-    return {"Twiter API":'Working'}
+
 
 ## Users
-
-
-
-
 @app.post(
     path='/signup',
     response_model=User,
     status_code=status.HTTP_201_CREATED,
     summary='Registers a users',
-    tags='Users'
+    tags=['Users']
 )
 def signup():
     pass
@@ -105,17 +92,19 @@ def signup():
     response_model=User,
     status_code=status.HTTP_200_OK,
     summary='Logins a users',
-    tags='Users'
+    tags=['Users']
 )
 def login():
     pass
+
+
 
 @app.get(
     path='/users',
     response_model=List[User],
     status_code=status.HTTP_200_OK,
     summary='Shows all users',
-    tags='Users'
+    tags=['Users']
 )
 def shows_all_users   ():
     pass
@@ -125,7 +114,7 @@ def shows_all_users   ():
     response_model=User,
     status_code=status.HTTP_200_OK,
     summary='Shows a single user',
-    tags='Users'
+    tags=['Users']
 )
 def show_a_user():
     pass
@@ -136,27 +125,86 @@ def show_a_user():
     response_model=User,
     status_code=status.HTTP_200_OK,
     summary='Deletes a user',
-    tags='Users'
+    tags=['Users']
 )
 
 def delete_a_user():
     pass
 
 
-
 @app.put(
     path='/users/{user_id}/update',
-    resposnse_model=User,
+    response_model=User,
     status_code=status.HTTP_200_OK,
-    summary='Updates a user'
+    summary='Updates a user',
+    tags=['Users']
    )
 
 def update_a_user():
     pass
 
+
 ## Tweets
 
+###Show all tweets
+@app.get(
+    path='/',
+    response_model=List[Tweet],
+    status_code=status.HTTP_200_OK,
+    summary='Show all tweets',
+    tags=['Tweets'])
 
+def home():
+    """
+    Title:
+    Description:
+    Parameters:
+    Returns:
+    """
+    
+### Post a Tweet    
+@app.post(
+    path='/post',
+    response_model=Tweet,
+    status_code=status.HTTP_201_CREATED,
+    summary='Post a tweet',
+    tags=['Tweets']
+)
+def post():
+    pass
+
+### Show a Tweet
+@app.get(
+    path='/tweets/{tweet_id}',
+    response_model=Tweet,
+    status_code=status.HTTP_200_OK,
+    summary='Shows a tweet',
+    tags=['Tweets']
+)    
+def show_a_tweet():
+    pass
+    
+###Delete a tweet    
+@app.delete(
+    path='/tweets/{tweet_id}/delete',
+    response_model=Tweet,
+    status_code=status.HTTP_200_OK,
+    summary='Delete a  tweet',
+    tags=['Tweets']
+)
+
+def delete_a_tweett():
+    pass
+    
+@app.put(
+    path='/tweets/{tweet_id}/update',
+    response_model=Tweet,
+    status_code=status.HTTP_200_OK,
+    summary='Updates a tweet tweet',
+    tags=['Tweets']
+)
+def update_a_tweet():
+        pass
 """tweets
 #create on the show
 
@@ -169,15 +217,6 @@ create on my own
 /tweets/{tweet-id}/update ->udpate a specific tweet
 
 
-users
-/Signup ->Register a user
-/Login->Login a user
-/users ->Show all users
-/users/{user_id} ->s/show a specific user information
-/users/{user_id}/delete ->delete a specific user account
-/users/{user_id}/udpate ->update a specific  user account
-
-
 
 
 
@@ -186,3 +225,21 @@ users
 if __name__ == "__main__":
    import uvicorn
    uvicorn.run(app, host="localhost", port=8000)
+   
+   """- controllers
+	- __init__.py
+	- auth.py
+	- tweet.py
+	- user.py
+-models
+	- __init__.py
+	- Tweet.py
+	- User.py
+-venv
+.gitignore
+main.py
+README.md
+requirements.py
+"""
+
+
