@@ -1,6 +1,7 @@
 
 # library imports 
 #python
+import json
 from uuid import UUID #assigns a unique identifier
 from datetime import date
 from datetime import datetime
@@ -15,6 +16,7 @@ from pydantic import Field
 #fastapi
 from fastapi import FastAPI
 from fastapi import status
+from fastapi import Body
 
 
 app=FastAPI()
@@ -90,7 +92,7 @@ class Tweet(BaseModel):
     summary='Registers a users',
     tags=['Users']
 )
-def signup():
+def signup(user:UserRegister=Body(...)):
     """
     Signup
     
@@ -105,8 +107,18 @@ def signup():
     -email : Emailstr
     first_name:str
     last_name: str
-    birth_date:str
+    birth_date:datetime
     """
+    with open('users.json','r+',encoding='utf-8') as f:
+            results=json.loads(f.read())
+            user_dict=user.dict()
+            user_dict['user_id']=str(user_dict['user_id'])# we do this as both uuid and data data types do not naturally conver to json
+            user_dict['birth_date']=str(user_dict['birth_date'])
+            results.append(user_dict)
+            f.seek(0)#starting writing from the start of the file, in order to avoid stuff being repeated
+            f.write(json.dumps(results))#transforms the file into a json again
+            return user #returns original  argument that the function received to advised the user that everything is ok
+        
 
 
 @app.post(
