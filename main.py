@@ -1,260 +1,285 @@
-
-# library imports 
-#python
+# Python
 import json
-from uuid import UUID #assigns a unique identifier
+from uuid import UUID
 from datetime import date
 from datetime import datetime
-from typing import Optional,List #
+from typing import Optional, List
 
-#Pydantic
-
+# Pydantic
 from pydantic import BaseModel
 from pydantic import EmailStr
 from pydantic import Field
 
-#fastapi
+# FastAPI
 from fastapi import FastAPI
 from fastapi import status
 from fastapi import Body
 
+app = FastAPI()
 
-app=FastAPI()
-
-#Models
-class UserBase(BaseModel): 
-    user_id:UUID=Field(
-        ...
-        )   
-    email:EmailStr=Field(
-        ...
-            )
+# Models
 
 
-class User(UserBase):
-    user_id:UUID=Field(
-        ...
-        )   
-    email:EmailStr=Field(
-        ...
-            )
-    
-    first_name:str=Field(
-        ...,
-        min_length=1,
-        max_length=50
-        )
-    last_name:str=Field(
-        ...,
-        min_length=1,
-        max_length=50
-        )
-    birth_date:Optional[date]=Field(Default=None)
-    
+class UserBase(BaseModel):
+    user_id: UUID = Field(...)
+    email: EmailStr = Field(...)
+
+
 class UserLogin(UserBase):
-    password:str=Field(
+    password: str = Field(
         ...,
         min_length=8,
         max_length=64
-        )    
-    
+    )
+
+
+class User(UserBase):
+    first_name: str = Field(
+        ...,
+        min_length=1,
+        max_length=50
+    )
+    last_name: str = Field(
+        ...,
+        min_length=1,
+        max_length=50
+    )
+    birth_date: Optional[date] = Field(default=None)
+
+
 class UserRegister(User):
     password: str = Field(
         ...,
         min_length=8,
         max_length=64
     )
+
+
 class Tweet(BaseModel):
-    tweet_id:UUID=Field(...)
-    content:str=Field(
+    tweet_id: UUID = Field(...)
+    content: str = Field(
         ...,
         min_length=1,
         max_length=256
     )
-    created_at:datetime= Field(default=datetime.now())
-    updated_at:Optional[datetime]=Field(default=None)     
-    
+    created_at: datetime = Field(default=datetime.now())
+    updated_at: Optional[datetime] = Field(default=None)
+    by: User = Field(...)
+
+# Path Operations
+
+# Users
+
+# Register a user
 
 
-#esqueleto de las path operations
-
-#Path Operations
-
-
-
-
-## Users
-### Registers a user
 @app.post(
-    path='/signup',
+    path="/signup",
     response_model=User,
     status_code=status.HTTP_201_CREATED,
-    summary='Registers a users',
-    tags=['Users']
+    summary="Register a User",
+    tags=["Users"]
 )
-def signup(user:UserRegister=Body(...)):
+def signup(user: UserRegister = Body(...)):
     """
     Signup
+
+    This path operation register a user in the app
+    Parameters: 
+    - Request body parameter
+            - user: UserRegister
     
-    This path operation  registers a user in the app
-    
-    Parameters:
-    -Request body Parameter
-        user-UserRegister
-        
-    Returns a Json with the basic user information:
-    user_id :UUID
-    -email : Emailstr
-    first_name:str
-    last_name: str
-    birth_date:datetime
+    Returns a json with the basic user information: 
+        - user_id: UUID
+        - email: Emailstr
+        - first_name: str
+        - last_name: str
+        - birth_date: datetime
     """
-    with open('users.json','r+',encoding='utf-8') as f:
-            results=json.loads(f.read())
-            user_dict=user.dict()
-            user_dict['user_id']=str(user_dict['user_id'])# we do this as both uuid and data data types do not naturally conver to json
-            user_dict['birth_date']=str(user_dict['birth_date'])
-            results.append(user_dict)
-            f.seek(0)#starting writing from the start of the file, in order to avoid stuff being repeated
-            f.write(json.dumps(results))#transforms the file into a json again
-            return user #returns original  argument that the function received to advised the user that everything is ok
-        
+    with open("users.json", "r+", encoding="utf-8") as f:
+        results = json.loads(f.read())
+        user_dict = user.dict()
+        user_dict["user_id"] = str(user_dict["user_id"])
+        user_dict["birth_date"] = str(user_dict["birth_date"])
+        results.append(user_dict)
+        f.seek(0)
+        f.write(json.dumps(results))
+        return user
 
 
+# Login a user
 @app.post(
-    path='/login',
+    path="/login",
     response_model=User,
     status_code=status.HTTP_200_OK,
-    summary='Logins a users',
-    tags=['Users']
+    summary="Login a User",
+    tags=["Users"]
 )
 def login():
     pass
 
+# Show all users
 
 
 @app.get(
-    path='/users',
+    path="/users",
     response_model=List[User],
     status_code=status.HTTP_200_OK,
-    summary='Shows all users',
-    tags=['Users']
+    summary="Show all users",
+    tags=["Users"]
 )
-def shows_all_users   ():
-    pass
+def show_all_users():
+    """
+    This path operation shows all users in the app
+
+    Parameters: 
+        -
+
+    Returns a json list with all users in the app, with the following keys: 
+        - user_id: UUID
+        - email: Emailstr
+        - first_name: str
+        - last_name: str
+        - birth_date: datetime
+    """
+    with open("users.json", "r", encoding="utf-8") as f:
+        results = json.loads(f.read())
+    return results
+
+# Show a user
+
 
 @app.get(
-    path='/users/{user_id}',
+    path="/users/{user_id}",
     response_model=User,
     status_code=status.HTTP_200_OK,
-    summary='Shows a single user',
-    tags=['Users']
+    summary="Show a User",
+    tags=["Users"]
 )
 def show_a_user():
     pass
 
+# Delete a user
+
 
 @app.delete(
-    path='/users/{user_id}/delete',
+    path="/users/{user_id}/delete",
     response_model=User,
     status_code=status.HTTP_200_OK,
-    summary='Deletes a user',
-    tags=['Users']
+    summary="Delete a User",
+    tags=["Users"]
 )
-
 def delete_a_user():
     pass
 
+# Update a user
+
 
 @app.put(
-    path='/users/{user_id}/update',
+    path="/users/{user_id}/update",
     response_model=User,
     status_code=status.HTTP_200_OK,
-    summary='Updates a user',
-    tags=['Users']
-   )
-
+    summary="Update a User",
+    tags=["Users"]
+)
 def update_a_user():
     pass
 
 
-## Tweets
+# Tweets
 
-###Show all tweets
+# Show  all tweets
 @app.get(
-    path='/',
+    path="/",
     response_model=List[Tweet],
     status_code=status.HTTP_200_OK,
-    summary='Show all tweets',
-    tags=['Tweets'])
-
+    summary="Show all tweets",
+    tags=["Tweets"]
+)
 def home():
-    """
-    Title:
-    Description:
-    Parameters:
-    Returns:
-    """
-    
-### Post a Tweet    
+    return {"Twitter API": "Working!"}
+
+# Post a tweet
+
+
 @app.post(
-    path='/post',
+    path="/post",
     response_model=Tweet,
     status_code=status.HTTP_201_CREATED,
-    summary='Post a tweet',
-    tags=['Tweets']
+    summary="Post a tweet",
+    tags=["Tweets"]
 )
-def post():
-    pass
+def post(tweet: Tweet = Body(...)):
+    """
+    Post a Tweet
 
-### Show a Tweet
+    This path operation post a tweet in the app
+
+    Parameters: 
+        - Request body parameter
+            - tweet: Tweet
+    
+    Returns a json with the basic tweet information: 
+        tweet_id: UUID  
+        content: str    
+        created_at: datetime
+        updated_at: Optional[datetime]
+        by: User
+    """
+    with open("tweets.json", "r+", encoding="utf-8") as f:
+        results = json.loads(f.read())
+        tweet_dict = tweet.dict()
+        tweet_dict["tweet_id"] = str(tweet_dict["tweet_id"])
+        tweet_dict["created_at"] = str(tweet_dict["created_at"])
+        tweet_dict["updated_at"] = str(tweet_dict["updated_at"])
+        tweet_dict["by"]["user_id"] = str(tweet_dict["by"]["user_id"])
+        tweet_dict["by"]["birth_date"] = str(tweet_dict["by"]["birth_date"])
+
+        results.append(tweet_dict)
+        f.seek(0)
+        f.write(json.dumps(results))
+        return tweet
+
+# Show a tweet
+
+
 @app.get(
-    path='/tweets/{tweet_id}',
+    path="/tweets/{tweet_id}",
     response_model=Tweet,
     status_code=status.HTTP_200_OK,
-    summary='Shows a tweet',
-    tags=['Tweets']
-)    
+    summary="Show a tweet",
+    tags=["Tweets"]
+)
 def show_a_tweet():
     pass
-    
-###Delete a tweet    
-@app.delete(
-    path='/tweets/{tweet_id}/delete',
-    response_model=Tweet,
-    status_code=status.HTTP_200_OK,
-    summary='Delete a  tweet',
-    tags=['Tweets']
-)
 
-def delete_a_tweett():
-    pass
-    
-@app.put(
-    path='/tweets/{tweet_id}/update',
+# Delete a tweet
+
+
+@app.delete(
+    path="/tweets/{tweet_id}/delete",
     response_model=Tweet,
     status_code=status.HTTP_200_OK,
-    summary='Updates a tweet tweet',
-    tags=['Tweets']
+    summary="Delete a tweet",
+    tags=["Tweets"]
+)
+def delete_a_tweet():
+    pass
+
+# Update a tweet
+
+
+@app.put(
+    path="/tweets/{tweet_id}/update",
+    response_model=Tweet,
+    status_code=status.HTTP_200_OK,
+    summary="Update a tweet",
+    tags=["Tweets"]
 )
 def update_a_tweet():
-        pass
-"""tweets
-#create on the show
-
-/ ->Show all tweets
-/Post -> create a  tweet
-create on my own
-
-/tweets/{tweet-id}/->show  a specific  tweet
-/tweets/{tweet-id}/delete a specific tweet
-/tweets/{tweet-id}/update ->udpate a specific tweet
+    pass
 
 
-
-
-
-"""
 
 if __name__ == "__main__":
    import uvicorn
